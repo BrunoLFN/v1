@@ -1,4 +1,4 @@
-from flask import Flask, render_template,redirect,request,make_response
+from flask import Flask, render_template,redirect,request,url_for
 from main import *
 usuarios = [
     {'nome':'bruno','idade': 24,'email':'bruno@gmail'},
@@ -6,13 +6,6 @@ usuarios = [
 ]
 documentos = visualizar_tarefas()
 app = Flask(__name__)
-@app.after_request
-def add_header(response):
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
-    response.headers['Cache-Control'] = 'public, max-age=0'
-    return response
 @app.route('/')
 def index(): 
     return render_template('index.html',documentos=documentos)
@@ -23,14 +16,14 @@ def cadastro2():
     descricao = request.form['descricao']
     data_vencimento = request.form['prazo']
     adicionar_tarefa(titulo,descricao,data_vencimento)
-    return redirect('/')
+    return redirect(url_for("app.index"))
 @app.route('/cadastro')
 def cadastro():
     return render_template('cadastro.html')
 @app.route('/delete/<tarefa_del>', methods=['GET'])
 def deletar(tarefa_del: str):
     excluir_tarefas(tarefa_del)
-    return redirect('/')
+    return redirect(url_for("app.index"))
 @app.route('/deleteAll')
 def deleteAll():
     excluir_tudo()
