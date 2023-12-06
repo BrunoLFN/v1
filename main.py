@@ -1,14 +1,28 @@
 from pymongo import MongoClient
 from datetime import datetime
+from werkzeug.security import generate_password_hash
 client = MongoClient('mongodb+srv://admin:hAx8Pbn4k5GxEcjZ@projeto-tarefas.gt2mfkg.mongodb.net/?retryWrites=true&w=majority')
 # client = MongoClient('mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.1.0')
 db = client["tarefas"]
 conexao = db["task"]
+conexao_user = db["users"]
 
+
+def entrar(nome):        
+    usuario = conexao_user.find_one({'nome': nome})
+    return usuario
+def criar_usuario(nome, psw):
+    usuario = {
+        'nome': nome,
+        'senha': generate_password_hash(psw) 
+    }
+    usuario_exist = conexao_user.find({'nome':nome})
+    if usuario_exist == usuario['nome']:
+        print(f'usuario {nome} já existe')
+    else:
+        conexao_user.insert_one(usuario)
+        print('usuario cadastrado com sucesso!!!')
 def adicionar_tarefa(titulo,descricao,data_vencimento):
-    # titulo = input('digite o titulo da tarefa: ')
-    # descricao = input('digite a descrição da tarefa: ')
-    # data_vencimento = input('informe o prazo da tarefa: (ano-mes-dia) ')
     try: 
         data_vencimento = datetime.strptime(data_vencimento, "%Y-%m-%d")
     except ValueError:
