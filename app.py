@@ -11,7 +11,7 @@ def index():
 def login():
     if 'username' in session:
         return redirect(url_for('home'))
-    elif request.method == 'POST':
+    if request.method == 'POST':
         username = request.form.get('nome_usuario')
         senha = request.form.get('senha')
         usuario= entrar(username)
@@ -19,7 +19,7 @@ def login():
             password = usuario['senha']
             if check_password_hash(password,senha):
                 session['username'] = usuario['nome']
-                redirect(url_for('home'))
+                return redirect(url_for('home'))
             else:
                 flash('senha não confere')
                 return render_template('login.html')
@@ -34,6 +34,10 @@ def cad_user():
     psw = request.form.get('senha')
     criar_usuario(nome,psw)
     return render_template('login.html')
+@app.route('/logout')
+def logout():
+    session.pop("username")
+    return redirect(url_for("login"))
 @app.route('/home')
 def home():
     if session['username']:
