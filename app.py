@@ -15,7 +15,7 @@ def login():
         username = request.form.get('nome_usuario')
         senha = request.form.get('senha')
         usuario= entrar(username)
-        if usuario['nome'] == username:
+        if usuario and usuario.get('nome') == username:
             password = usuario['senha']
             if check_password_hash(password,senha):
                 session['username'] = usuario['nome']
@@ -32,18 +32,24 @@ def login():
 def cad_user():
     nome = request.form.get('nome')
     psw = request.form.get('senha')
-    criar_usuario(nome,psw)
+    if not entrar(nome):
+        criar_usuario(nome,psw)
+        flash('Usuário criado com sucesso. Faça login.')
+    else:
+        flash('Nome de usuário já existe. Escolha outro.')
     return render_template('login.html')
 @app.route('/logout')
 def logout():
-    session.pop("username")
-    return redirect(url_for("login"))
+     if 'username' in session:
+        session.pop("username")
+        return redirect(url_for("login"))
 @app.route('/home')
 def home():
-    if session['username']:
-        return render_template('index.html')
+    if 'username' in session:
+        documentos = visualizar_tarefas()
+        return render_template('index.html', documentos=documentos)
     else:
-        flash('login.html')
+        flash('voce não está authenticado, faça login!!')
         redirect(url_for("login"))
 @app.route('/inserirdados',  methods=['POST'])
 def cadastro2(): 
