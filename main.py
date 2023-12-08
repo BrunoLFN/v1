@@ -11,14 +11,16 @@ conexao_user = db["users"]
 def entrar(nome):        
     usuario = conexao_user.find_one({'nome': nome})
     return usuario
-def criar_usuario(nome, psw):
+def criar_usuario(nome, psw,mail,phone):
     usuario = {
         'nome': nome,
-        'senha': generate_password_hash(psw) 
+        'senha': generate_password_hash(psw),
+        'email': mail,
+        'phone': phone 
     }
-    usuario_exist = conexao_user.find({'nome':nome})
-    if usuario_exist == usuario['nome']:
-        print(f'usuario {nome} já existe')
+    usuario_exist = conexao_user.find({'email':mail})
+    if usuario_exist == usuario['email']:
+        print(f'usuario {nome}, com email {mail} já existe, cadastre um usuario com novo email')
     else:
         conexao_user.insert_one(usuario)
         print('usuario cadastrado com sucesso!!!')

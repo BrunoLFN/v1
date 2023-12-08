@@ -32,8 +32,10 @@ def login():
 def cad_user():
     nome = request.form.get('nome')
     psw = request.form.get('senha')
+    mail = request.form.get('email')
+    phone = request.form.get('phone')
     if not entrar(nome):
-        criar_usuario(nome,psw)
+        criar_usuario(nome,psw,mail,phone)
         flash('Usuário criado com sucesso. Faça login.')
     else:
         flash('Nome de usuário já existe. Escolha outro.')
