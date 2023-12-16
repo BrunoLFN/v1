@@ -24,14 +24,14 @@ def criar_usuario(nome, psw,mail,phone):
     else:
         conexao_user.insert_one(usuario)
         print('usuario cadastrado com sucesso!!!')
-def adicionar_tarefa(titulo,descricao,data_vencimento):
+def adicionar_tarefa(assinatura,titulo,descricao,data_vencimento):
     try: 
         data_vencimento = datetime.strptime(data_vencimento, "%Y-%m-%d")
     except ValueError:
         print('Formato de data invalido')
         return
     if titulo != '':
-        conexao.insert_one({'titulo':titulo,'descricao':descricao,'data':data_vencimento,'status': False})
+        conexao.insert_one({'titulo':titulo,'descricao':descricao,'data':data_vencimento,'status': False,'assinatura':assinatura})
         print('Tarefa inserida com sucesso!!!') 
     else:
         print('o titulo da tarefa não pode ser vazio!!!')   
@@ -42,11 +42,11 @@ def visualizar_tarefas():
 def excluir_tarefas(tarefa_del):
     query = {'titulo': tarefa_del}
     conexao.delete_one(query)
-def editar_tarefa(filtro):
+def editar_tarefa(filtro,assinatura,titulo,descricao,data_vencimento):
     query = {'titulo': filtro}
-    conexao.update_one(query,{'$set':{'status':True}})
-def excluir_tudo():
-    query = {}
+    conexao.update_one(query,{'$set':{'titulo':titulo,'descricao':descricao,'data':data_vencimento,'status': False,'assinatura':assinatura}})
+def excluir_tudo(assinatura):
+    query = {'assinatura':assinatura}
     conexao.delete_many(query)
     print('TODAS AS TAREFAS FORAM EXCLUIDAS!!!!')
 # while True:

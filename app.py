@@ -49,28 +49,39 @@ def logout():
 def home():
     if 'username' in session:
         documentos = visualizar_tarefas()
-        return render_template('index.html', documentos=documentos)
+        assinatura = session['username']
+        return render_template('index.html', documentos=documentos, assinatura=assinatura)
     else:
         flash('voce não está authenticado, faça login!!')
         redirect(url_for("login"))
 @app.route('/inserirdados',  methods=['POST'])
-def cadastro2(): 
-    
+def inserirdados(): 
+    assinatura = session['username']
     titulo = request.form['titulo']
     descricao = request.form['descricao']
     data_vencimento = request.form['prazo']
-    adicionar_tarefa(titulo,descricao,data_vencimento)
+    adicionar_tarefa(assinatura,titulo,descricao,data_vencimento)
     return redirect(url_for("home"))
 @app.route('/cadastro')
 def cadastro():
     return render_template('cadastro.html')
+
+@app.route('/editardados/<filtro>',  methods=['GET','POST'])
+def editardados(filtro:str): 
+    assinatura = session['username']
+    titulo = request.form['titulo']
+    descricao = request.form['descricao']
+    data_vencimento = request.form['prazo']
+    editar_tarefa(filtro,assinatura,titulo,descricao,data_vencimento)
+    return redirect(url_for("home"))
 @app.route('/delete/<tarefa_del>', methods=['GET'])
 def deletar(tarefa_del: str):
     excluir_tarefas(tarefa_del)
     return redirect(url_for("home"))
 @app.route('/deleteAll')
 def deleteAll():
-    excluir_tudo()
+    assinatura = session['username']
+    excluir_tudo(assinatura)
     return redirect('/cadastro')
 if __name__ == '__main__':
     app.run(debug=True)
