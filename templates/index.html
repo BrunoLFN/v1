@@ -10,6 +10,16 @@
   <title>Home</title>
 </head>
 <body>
+  <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        M.toast({html: '{{ messages[-1][-1] }}', classes: '{{ messages[-1][0] }}'});
+      });
+    </script>
+    {% endif %}
+  {% endwith %}
   <nav class="blue lighten-2">
     <a href="#" data-target="slide-out" class="sidenav-trigger">
       <i class="material-icons">menu</i>
@@ -30,7 +40,6 @@
       </ul>
     </div>
   </nav>
-
   <div class="container">
     <table class="striped responsive-table">
       <thead>

@@ -24,6 +24,15 @@
     </style>
   </head>
   <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        M.toast({html: '{{ messages[-1][-1] }}', classes: '{{ messages[-1][0] }}'});
+      });
+    </script>
+    {% endif %}
+  {% endwith %}
     <div class="container ">
       <div class="row">
         <div class="col s12 m6 offset-m3">
