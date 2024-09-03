@@ -1,21 +1,37 @@
 from pymongo import MongoClient
 from datetime import datetime
+from werkzeug.security import generate_password_hash
 client = MongoClient('mongodb+srv://admin:hAx8Pbn4k5GxEcjZ@projeto-tarefas.gt2mfkg.mongodb.net/?retryWrites=true&w=majority')
 # client = MongoClient('mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.1.0')
 db = client["tarefas"]
 conexao = db["task"]
+conexao_user = db["users"]
 
-def adicionar_tarefa(titulo,descricao,data_vencimento):
-    # titulo = input('digite o titulo da tarefa: ')
-    # descricao = input('digite a descrição da tarefa: ')
-    # data_vencimento = input('informe o prazo da tarefa: (ano-mes-dia) ')
+
+def entrar(nome):        
+    usuario = conexao_user.find_one({'nome': nome})
+    return usuario
+def criar_usuario(nome, psw,mail,phone):
+    usuario = {
+        'nome': nome,
+        'senha': generate_password_hash(psw),
+        'email': mail,
+        'phone': phone 
+    }
+    usuario_exist = conexao_user.find({'email':mail})
+    if usuario_exist == usuario['email']:
+        print(f'usuario {nome}, com email {mail} já existe, cadastre um usuario com novo email')
+    else:
+        conexao_user.insert_one(usuario)
+        print('usuario cadastrado com sucesso!!!')
+def adicionar_tarefa(assinatura,titulo,descricao,data_vencimento):
     try: 
         data_vencimento = datetime.strptime(data_vencimento, "%Y-%m-%d")
     except ValueError:
         print('Formato de data invalido')
         return
     if titulo != '':
-        conexao.insert_one({'titulo':titulo,'descricao':descricao,'data':data_vencimento,'status': False})
+        conexao.insert_one({'titulo':titulo,'descricao':descricao,'data':data_vencimento,'status': False,'assinatura':assinatura})
         print('Tarefa inserida com sucesso!!!') 
     else:
         print('o titulo da tarefa não pode ser vazio!!!')   
@@ -26,11 +42,11 @@ def visualizar_tarefas():
 def excluir_tarefas(tarefa_del):
     query = {'titulo': tarefa_del}
     conexao.delete_one(query)
-def editar_tarefa(filtro):
+def editar_tarefa(filtro,assinatura,titulo,descricao,data_vencimento):
     query = {'titulo': filtro}
-    conexao.update_one(query,{'$set':{'status':True}})
-def excluir_tudo():
-    query = {}
+    conexao.update_one(query,{'$set':{'titulo':titulo,'descricao':descricao,'data':data_vencimento,'status': False,'assinatura':assinatura}})
+def excluir_tudo(assinatura):
+    query = {'assinatura':assinatura}
     conexao.delete_many(query)
     print('TODAS AS TAREFAS FORAM EXCLUIDAS!!!!')
 # while True:
